@@ -1,0 +1,59 @@
+{
+  "name": "automate-tools",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app/main/index.js",
+  "scripts": {
+    "start": "concurrently \"npm run start:render\" \"npm run start:main\" ",
+    "start:main": "electron .",
+    "start:render": "cd app/renderer && npm run dev",
+    "build": "cd app/renderer && npm run build",
+    "pack:win": "npm run build && electron-builder build --win",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "lyousan",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^7.3.0",
+    "electron": "^20.0.2",
+    "electron-builder": "^23.3.3",
+    "electron-builder-squirrel-windows": "^23.4.0",
+    "wait-on": "^6.0.1"
+  },
+  "dependencies": {
+    "compression": "^1.7.4",
+    "electron-is-dev": "^2.0.0",
+    "image-size": "^1.0.2",
+    "pako": "^2.0.4",
+    "xmldoc": "^1.2.0"
+  },
+  "build": {
+    "appId": "io.github.lyousan",
+    "productName": "automate-tools",
+    "files": "app",
+    "asar": false,
+    "extraFiles": [
+      "app/renderer/**/src"
+    ],
+    "directories": {
+      "buildResources": "resource",
+      "output": "release"
+    },
+    "copyright": "Copyright © 2022 lyousan",
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "language": "2052",
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true
+    },
+    "squirrelWindows": {
+      "iconUrl": "https://raw.githubusercontent.com/dengyaolong/geektime-electron/master/img/icon.ico"
+    }
+  }
+}

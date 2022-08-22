@@ -1,0 +1,26 @@
+{
+  "name": "renderer",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 4173"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.0.9",
+    "element-plus": "^2.2.13",
+    "image-size": "^1.0.2",
+    "mitt": "^3.0.0",
+    "vue": "^3.2.37",
+    "vuex": "^4.0.2"
+  },
+  "devDependencies": {
+    "@iconify/vue": "^3.2.1",
+    "@types/node": "^16.11.47",
+    "@vitejs/plugin-vue": "^3.0.1",
+    "vite": "^3.0.4",
+    "unplugin-auto-import": "^0.11.1",
+    "unplugin-icons": "^0.14.8",
+    "unplugin-vue-components": "^0.22.4"
+  }
+}
