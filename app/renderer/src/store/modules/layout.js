@@ -1,5 +1,5 @@
-const {ipcRenderer} = require("electron");
-import {mapToTree} from '../../common/utils.js';
+const { ipcRenderer } = require("electron");
+import { mapToTree } from '../../common/utils.js';
 
 const state = {
     xmlFilePath: '',
@@ -41,14 +41,23 @@ const getters = {
     },
     originXml: (state) => {
         return state.originXml;
+    },
+    findNodesByIds: (state) => {
+        return (ids) => {
+            let res = [];
+            ids.forEach(id => {
+                res.push(state.originNodeCache.get(id));
+            })
+            return res;
+        }
     }
 }
 
 const mutations = {
-    setXmlFilePath: (state, {filepath}) => {
+    setXmlFilePath: (state, { filepath }) => {
         state.xmlFilePath = filepath;
     },
-    setCapFilePath: (state, {filepath}) => {
+    setCapFilePath: (state, { filepath }) => {
         state.capFilePath = filepath;
     },
     clearOriginNodeCache: (state) => {
@@ -68,7 +77,7 @@ const mutations = {
         state.originNodeCache = payload;
     },
     renderNodeCache: (state, payload) => {
-        let {scaleRate} = payload;
+        let { scaleRate } = payload;
         console.log("mutations.renderNodeCache:", payload);
         state.originNodeCache.forEach((v, k) => {
             let bounds = v.bounds;
@@ -117,14 +126,14 @@ const mutations = {
 }
 
 const actions = {
-    renderNodeCache: async ({state, commit}, payload) => {
+    renderNodeCache: async ({ state, commit }, payload) => {
         commit('clearOriginNodeCache');
         commit('clearRenderedNodeCache');
         let originNodeCache = await ipcRenderer.invoke('loadDoc', state.xmlFilePath);
         commit('loadOriginNodeCache', originNodeCache);
         commit('renderNodeCache', payload);
     },
-    loadNodeTree: async ({state, commit}) => {
+    loadNodeTree: async ({ state, commit }) => {
         commit('clearOriginNodeCache');
         let originNodeCache = await ipcRenderer.invoke('loadDoc', state.xmlFilePath);
         let originXml = await ipcRenderer.invoke('getOriginXml');
@@ -132,19 +141,19 @@ const actions = {
         commit('loadOriginNodeCache', originNodeCache);
         await commit('loadNodeTree');
     },
-    setCurrentNode: ({commit}, cacheId) => {
+    setCurrentNode: ({ commit }, cacheId) => {
         commit('clearCurrentNode');
         commit('setCurrentNode', cacheId);
         commit('addClickedNode', cacheId);
     },
-    toggleExcludeNode: ({state, commit}, cacheId) => {
+    toggleExcludeNode: ({ state, commit }, cacheId) => {
         if (state.excludeNodes.indexOf(cacheId) > -1) {
             commit('removeExcludeNode', cacheId);
         } else {
             commit('addExcludeNode', cacheId);
         }
     },
-    setOriginXml: async ({state, commit}) => {
+    setOriginXml: async ({ state, commit }) => {
         state.originXml = await ipcRenderer.invoke('getOriginXml');
     }
 }

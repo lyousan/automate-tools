@@ -20,7 +20,7 @@
               <el-col :span="24">
                 <el-button-group>
                   <el-tooltip effect="light" content="点击" placement="bottom">
-                    <el-button @click="nodeClickHandle" :disabled="currentMode !== 'client'" type="" icon="Aim" />
+                    <el-button @click="nodeClickHandle" :disabled="true" type="" icon="Aim" />
                   </el-tooltip>
                   <el-tooltip effect="light" content="点击节点" placement="bottom">
                     <el-button @click="nodeClickHandle" :disabled="currentMode !== 'client'" type="">
@@ -28,7 +28,7 @@
                     </el-button>
                   </el-tooltip>
                   <el-tooltip effect="light" content="滑动" placement="bottom">
-                    <el-button :disabled="currentMode !== 'client'">
+                    <el-button :disabled="true">
                       <Icon icon="fluent:double-tap-swipe-down-20-regular" :rotate="3" height="20" />
                     </el-button>
                   </el-tooltip>
@@ -36,7 +36,7 @@
                     <el-button :disabled="currentMode !== 'client'" type="" icon="EditPen" />
                   </el-tooltip>
                   <el-tooltip effect="light" content="计时" placement="bottom">
-                    <el-button :disabled="currentMode !== 'client'" type="" icon="Stopwatch" />
+                    <el-button :disabled="true" type="" icon="Stopwatch" />
                   </el-tooltip>
                 </el-button-group>
               </el-col>
@@ -179,6 +179,7 @@ el-main {
   /*background-color: #fcc;*/
   /*padding: 12px;*/
   box-sizing: border-box;
+  margin-top: 1px;
 }
 
 .info-container>.el-row {

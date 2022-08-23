@@ -228,6 +228,7 @@ const capFilePath = computed(() => {
   position: relative;
   overflow: hidden;
   text-align: center;
+  margin-top: 1px;
 }
 
 .el-header,

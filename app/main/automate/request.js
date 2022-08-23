@@ -7,6 +7,7 @@ class Request {
 
     constructor() {
         this.id = uuid();
+        this.timestamp=new Date().getTime();
     }
 }
 

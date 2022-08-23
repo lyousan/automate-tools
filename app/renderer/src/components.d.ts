@@ -37,6 +37,7 @@ declare module '@vue/runtime-core' {
     NodeInfoPane: typeof import('./components/layout-analyzer/NodeInfoPane.vue')['default']
     PaneHeader: typeof import('./components/common/PaneHeader.vue')['default']
     SearchModal: typeof import('./components/search/SearchModal.vue')['default']
+    SearchResultModal: typeof import('./components/search/SearchResultModal.vue')['default']
     SettingsModal: typeof import('./components/settings/SettingsModal.vue')['default']
   }
 }
