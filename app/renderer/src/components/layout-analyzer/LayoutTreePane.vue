@@ -5,60 +5,36 @@
         <pane-header :title="title">
           <template v-slot:title>
             <Icon icon="ic:round-account-tree" color="gray" height="24px"
-                  style="vertical-align: middle;margin-right: 5px"/>
+              style="vertical-align: middle;margin-right: 5px" />
             <span>{{ title }}</span>
           </template>
           <template v-slot:extra>
-            <el-tooltip
-                effect="light"
-                content="设置"
-                placement="bottom"
-            >
-              <el-button icon="Setting" @click="openSettingsModal" circle style="cursor: pointer"/>
+            <el-tooltip effect="light" content="设置" placement="bottom">
+              <el-button icon="Setting" @click="openSettingsModal" circle />
             </el-tooltip>
-            <el-tooltip
-                effect="light"
-                content="导入文件"
-                placement="bottom"
-            >
-              <el-button icon="FolderOpened" @click="openImportFileModal" circle style="cursor: pointer"/>
+            <el-tooltip effect="light" content="导入文件" placement="bottom">
+              <el-button icon="FolderOpened" @click="openImportFileModal" circle />
             </el-tooltip>
-            <el-tooltip
-                effect="light"
-                content="复制XML"
-                placement="bottom"
-            >
-              <el-button icon="DocumentCopy" @click="copyXmlHandle" circle style="cursor: pointer"/>
+            <el-tooltip effect="light" content="复制XML" placement="bottom">
+              <el-button icon="DocumentCopy" @click="copyXmlHandle" :disabled="!store.getters.isOk" circle />
             </el-tooltip>
-            <el-tooltip
-                effect="light"
-                content="搜索"
-                placement="bottom"
-            >
-              <el-button icon="Search" circle style="cursor: pointer"/>
+            <el-tooltip effect="light" content="搜索" placement="bottom">
+              <el-button icon="Search" @click="openSearchModal" circle :disabled="!store.getters.isOk" />
             </el-tooltip>
           </template>
         </pane-header>
       </el-header>
       <div ref="treeContainerRef" class="tree-container">
         <el-scrollbar height="100%">
-          <el-tree class="el-scrollbar"
-                   ref="nodeTreeRef"
-                   :data="nodeTree"
-                   :props="treeProps"
-                   node-key="cacheId"
-                   :highlight-current="true"
-                   :default-expand-all="false"
-                   :current-node-key="currentNode"
-                   :expand-on-click-node="false"
-                   :height="treeContainerRef&&treeContainerRef.clientHeight"
-                   @node-click="nodeClickHandle"
-                   width="auto">
+          <el-tree class="el-scrollbar" ref="nodeTreeRef" :data="nodeTree" :props="treeProps" node-key="cacheId"
+            :highlight-current="true" :default-expand-all="false" :current-node-key="currentNode"
+            :expand-on-click-node="false" :height="treeContainerRef && treeContainerRef.clientHeight"
+            @node-click="nodeClickHandle" width="auto">
             <template #default="{ node, data }">
               <span class="custom-tree-node">
                 <span class="label-class">&lt;node</span>
                 <span class="label-extra">
-                   <span class="label-extra-label" v-if="data.class">
+                  <span class="label-extra-label" v-if="data.class">
                     class="<span class="label-extra-value">{{ data.class }}</span>"
                   </span>
                   <span class="label-extra-label" v-if="data.resourceId">
@@ -79,11 +55,11 @@
 
 <script setup>
 
-import {useStore} from "vuex";
+import { useStore } from "vuex";
 import bus from "@/common/bus";
-import {ElMessage} from "element-plus";
+import { ElMessage } from "element-plus";
 
-const {ipcRenderer} = require("electron");
+const { ipcRenderer } = require("electron");
 
 const store = useStore();
 let title = ref('Layout Tree')
@@ -131,6 +107,9 @@ const openSettingsModal = () => {
 const openImportFileModal = () => {
   bus.$emit('openImportFileModal');
 }
+const openSearchModal = () => {
+  bus.$emit('openSearchModal');
+}
 const copyXmlHandle = () => {
   if (originXml.value) {
     ipcRenderer.send('setClipboard', originXml.value);
@@ -151,7 +130,8 @@ const originXml = computed(() => {
   display: inline-block !important;
 }
 
-.el-header, el-main {
+.el-header,
+el-main {
   padding: 0;
 }
 
@@ -178,8 +158,7 @@ const originXml = computed(() => {
   color: #6f7e85;
 }
 
-/deep/ .exclude-node > .el-tree-node__content {
+/deep/ .exclude-node>.el-tree-node__content {
   background: rgba(252, 224, 136, 0.2) !important;
 }
-
 </style>

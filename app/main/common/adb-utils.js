@@ -1,4 +1,4 @@
-const {execSync} = require('child_process');
+const { execSync } = require('child_process');
 const path = require("path");
 const fs = require("fs");
 const ADB_DEVICES = 'adb devices';
@@ -24,7 +24,7 @@ exports.backByAdb = (udid) => {
 };
 exports.screenCap = (udid, filename) => {
     const removeBefore = () => {
-        let dir = path.resolve(process.cwd(),'resources');
+        let dir = path.resolve(process.cwd(), 'resources');
         let files = fs.readdirSync(dir);
         files.forEach(file => {
             if (file.startsWith('layout')) {
@@ -39,4 +39,14 @@ exports.screenCap = (udid, filename) => {
     execSync(`adb -s ${udid} pull /sdcard/${filename} "${filepath}"`);
     return filepath;
 }
-
+exports.getAppVersion = (udid, packageName) => {
+    try {
+        let version = execSync(`adb -s ${udid} shell pm dump ${packageName} | findstr versionName`);
+        return version && version.toString().replace('versionName=', '').trim();
+    } catch (err) {
+        console.error(err);
+    }
+}
+exports.installApp = (udid, apkPath) => {
+    execSync(`adb -s ${udid} install -r "${apkPath}"`);
+}

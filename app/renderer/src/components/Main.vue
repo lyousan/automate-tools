@@ -4,10 +4,10 @@ import LayoutTreePane from "@/components/layout-analyzer/LayoutTreePane.vue";
 import NodeInfoPane from "@/components/layout-analyzer/NodeInfoPane.vue";
 import SettingsModal from "@/components/settings/SettingsModal.vue";
 import bus from "@/common/bus";
-import {useStore} from "vuex";
+import { useStore } from "vuex";
 import ImportFileModal from "@/components/improt-file/ImportFileModal.vue";
 
-const {ipcRenderer} = require('electron')
+const { ipcRenderer } = require('electron')
 const store = useStore();
 onMounted(() => {
   bus.$on('openSettingsModal', () => {
@@ -15,6 +15,9 @@ onMounted(() => {
   });
   bus.$on('openImportFileModal', () => {
     store.commit('showImportFileModal');
+  });
+  bus.$on('openSearchModal', () => {
+    store.commit('showSearchModal');
   });
 })
 onMounted(async () => {
@@ -47,24 +50,26 @@ let rightStyle = {
   <div class="common-layout">
     <el-container>
       <el-main :style="leftStyle">
-        <layout-display-pane :parentStyle="leftStyle"/>
+        <layout-display-pane :parentStyle="leftStyle" />
       </el-main>
       <el-main :style="centerStyle">
-        <layout-tree-pane/>
+        <layout-tree-pane />
       </el-main>
       <el-main :style="rightStyle">
-        <node-info-pane/>
+        <node-info-pane />
       </el-main>
       <div>
-        <settings-modal/>
-        <import-file-modal/>
+        <settings-modal />
+        <import-file-modal />
+        <search-modal />
       </div>
     </el-container>
   </div>
 </template>
 
 <style scoped>
-.common-layout, .el-container {
+.common-layout,
+.el-container {
   height: 100%;
   width: 100%;
 }

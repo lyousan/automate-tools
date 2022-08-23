@@ -1,9 +1,9 @@
-const {ipcMain} = require("electron");
-const {loadDoc, getOriginXml} = require("../common/layout-util");
-const {setClipboard} = require("../common/clipboard");
-const {adbDevices, screenCap} = require("../common/adb-utils");
-const {Dump} = require("../automate/dump");
-const {AndroidBot} = require("../automate/androidBot");
+const { ipcMain } = require("electron");
+const { loadDoc, getOriginXml } = require("../common/layout-util");
+const { setClipboard } = require("../common/clipboard");
+const { adbDevices, screenCap, getAppVersion, installApp } = require("../common/adb-utils");
+const { Dump } = require("../automate/dump");
+const { AndroidBot } = require("../automate/androidBot");
 const fs = require("fs");
 const path = require("path");
 
@@ -34,14 +34,21 @@ module.exports = function () {
     ipcMain.handle('getOriginXml', (event) => {
         return getOriginXml();
     });
-    ipcMain.handle('screenCap', (event, {udid, filename = 'layout.png'}) => {
+    ipcMain.handle('screenCap', (event, { udid, filename = 'layout.png' }) => {
         return screenCap(udid, filename);
     });
+    ipcMain.handle('check-automate', (event, { udid }) => {
+        let version = getAppVersion(udid, 'cn.chci.hmcs.automate');
+        if (!version) {
+            installApp(udid, path.join(process.cwd(), 'resources/automate.apk'));
+        }
+        return version;
+    });
     let bot = null;
-    ipcMain.on('automate-create', (event, {udid}) => {
+    ipcMain.on('automate-create', (event, { udid }) => {
         bot = new AndroidBot(udid);
     });
-    ipcMain.handle('automate-dump', async (event, {filename = 'layout.xml'}) => {
+    ipcMain.handle('automate-dump', async (event, { filename = 'layout.xml' }) => {
         let dumpRes = await bot.dump();
         let filepath = path.resolve(process.cwd(), `resources/${filename}`);
         if (dumpRes.code == 200) {
@@ -51,5 +58,9 @@ module.exports = function () {
     });
     ipcMain.handle('automate-node-click', async (event, cacheId) => {
         return await bot.nodeClick(cacheId);
+    });
+    ipcMain.handle('automate-find', async (event, { type, value }) => {
+        let res = await bot.find({ type, value });
+        return res
     })
 };

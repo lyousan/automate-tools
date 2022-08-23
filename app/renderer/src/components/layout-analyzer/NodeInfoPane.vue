@@ -5,7 +5,7 @@
         <pane-header :title="title">
           <template v-slot:title>
             <Icon icon="akar-icons:info-fill" color="gray" height="24px"
-                  style="vertical-align: middle;margin-right: 5px"/>
+              style="vertical-align: middle;margin-right: 5px" />
             <span>{{ title }}</span>
           </template>
           <template v-slot:extra>
@@ -19,44 +19,24 @@
             <el-row>
               <el-col :span="24">
                 <el-button-group>
-                  <el-tooltip
-                      effect="light"
-                      content="点击"
-                      placement="bottom"
-                  >
-                    <el-button @click="nodeClickHandle" :disabled="currentMode!=='client'" type="" icon="Aim"/>
+                  <el-tooltip effect="light" content="点击" placement="bottom">
+                    <el-button @click="nodeClickHandle" :disabled="currentMode !== 'client'" type="" icon="Aim" />
                   </el-tooltip>
-                  <el-tooltip
-                      effect="light"
-                      content="点击节点"
-                      placement="bottom"
-                  >
-                    <el-button @click="nodeClickHandle" :disabled="currentMode!=='client'" type="">
-                      <Icon icon="icon-park-outline:click-tap"/>
+                  <el-tooltip effect="light" content="点击节点" placement="bottom">
+                    <el-button @click="nodeClickHandle" :disabled="currentMode !== 'client'" type="">
+                      <Icon icon="icon-park-outline:click-tap" />
                     </el-button>
                   </el-tooltip>
-                  <el-tooltip
-                      effect="light"
-                      content="滑动"
-                      placement="bottom"
-                  >
-                    <el-button :disabled="currentMode!=='client'">
-                      <Icon icon="fluent:double-tap-swipe-down-20-regular" :rotate="3" height="20"/>
+                  <el-tooltip effect="light" content="滑动" placement="bottom">
+                    <el-button :disabled="currentMode !== 'client'">
+                      <Icon icon="fluent:double-tap-swipe-down-20-regular" :rotate="3" height="20" />
                     </el-button>
                   </el-tooltip>
-                  <el-tooltip
-                      effect="light"
-                      content="输入"
-                      placement="bottom"
-                  >
-                    <el-button :disabled="currentMode!=='client'" type="" icon="EditPen"/>
+                  <el-tooltip effect="light" content="输入" placement="bottom">
+                    <el-button :disabled="currentMode !== 'client'" type="" icon="EditPen" />
                   </el-tooltip>
-                  <el-tooltip
-                      effect="light"
-                      content="计时"
-                      placement="bottom"
-                  >
-                    <el-button :disabled="currentMode!=='client'" type="" icon="Stopwatch"/>
+                  <el-tooltip effect="light" content="计时" placement="bottom">
+                    <el-button :disabled="currentMode !== 'client'" type="" icon="Stopwatch" />
                   </el-tooltip>
                 </el-button-group>
               </el-col>
@@ -65,18 +45,17 @@
               <el-col :span="24">
                 <el-collapse :model-value="expands">
                   <el-collapse-item title="Location" name="Location">
-                    <el-table :data="locationData" size="small" fit table-layout="fixed"
-                              @cell-click="valueClickHandle">
-                      <el-table-column prop="key" label="by" min-width="30"/>
-                      <el-table-column prop="value" label="selector"/>
-                      <el-table-column prop="timing" label="timing" width="100"/>
+                    <el-table :data="locationData" size="small" fit table-layout="fixed" @cell-click="valueClickHandle">
+                      <el-table-column prop="key" label="by" min-width="30" />
+                      <el-table-column prop="value" label="selector" />
+                      <el-table-column prop="timing" label="timing" width="100" />
                     </el-table>
                   </el-collapse-item>
                   <el-collapse-item title="Attributes" name="Attributes">
                     <el-table :data="attributeData" size="small" fit table-layout="fixed"
-                              @cell-click="valueClickHandle">
-                      <el-table-column prop="key" label="key" min-width="30"/>
-                      <el-table-column prop="value" label="value"/>
+                      @cell-click="valueClickHandle">
+                      <el-table-column prop="key" label="key" min-width="30" />
+                      <el-table-column prop="value" label="value" />
                     </el-table>
                   </el-collapse-item>
                 </el-collapse>
@@ -91,10 +70,10 @@
 
 <script setup>
 import store from "@/store";
-import {ElLoading, ElMessage} from "element-plus";
+import { ElLoading, ElMessage } from "element-plus";
 import bus from "@/common/bus";
 
-const {ipcRenderer} = require('electron')
+const { ipcRenderer } = require('electron')
 let title = ref("Node Info");
 let expands = ref(["Location", "Attributes"]);
 let loading = ref();
@@ -122,7 +101,7 @@ const locationData = computed(() => {
   if (node.resourceId) {
     // 这个vs是用来过滤的，如果有多个节点id都是一样的话，那么就不能单靠id来定位，换而言之，只有当id唯一时才显示，content-desc同理
     let vs = allNodes.filter(n => n.resourceId == node.resourceId)
-        .map(n => n);
+      .map(n => n);
     if (vs.length === 1) {
       arr.push({
         key: 'id',
@@ -132,7 +111,7 @@ const locationData = computed(() => {
   }
   if (node.contentDesc) {
     let vs = allNodes.filter(n => n.contentDesc == node.contentDesc)
-        .map(n => n);
+      .map(n => n);
     if (vs.length == 1) {
       arr.push({
         key: 'content-desc',
@@ -161,21 +140,21 @@ const valueClickHandle = (row, column, cell, event) => {
 const attributeData = computed(() => {
   let arr = [];
   let node = currentNode.value;
-  arr.push({key: "class", value: node.class})
-  arr.push({key: "resources-id", value: node.resourceId})
-  arr.push({key: "text", value: node.text})
-  arr.push({key: "content-desc", value: node.contentDesc})
-  arr.push({key: "checkable", value: node.checkable})
-  arr.push({key: "checked", value: node.checked})
-  arr.push({key: "clickable", value: node.clickable})
-  arr.push({key: "editable", value: node.editable})
-  arr.push({key: "enabled", value: node.enabled})
-  arr.push({key: "focusable", value: node.focusable})
-  arr.push({key: "focused", value: node.focused})
-  arr.push({key: "scrollable", value: node.scrollable})
-  arr.push({key: "long-clickable", value: node.longClickable})
-  arr.push({key: "selected", value: node.selected})
-  arr.push({key: "bounds", value: node.bounds})
+  arr.push({ key: "class", value: node.class })
+  arr.push({ key: "resources-id", value: node.resourceId })
+  arr.push({ key: "text", value: node.text })
+  arr.push({ key: "content-desc", value: node.contentDesc })
+  arr.push({ key: "checkable", value: node.checkable })
+  arr.push({ key: "checked", value: node.checked })
+  arr.push({ key: "clickable", value: node.clickable })
+  arr.push({ key: "editable", value: node.editable })
+  arr.push({ key: "enabled", value: node.enabled })
+  arr.push({ key: "focusable", value: node.focusable })
+  arr.push({ key: "focused", value: node.focused })
+  arr.push({ key: "scrollable", value: node.scrollable })
+  arr.push({ key: "long-clickable", value: node.longClickable })
+  arr.push({ key: "selected", value: node.selected })
+  arr.push({ key: "bounds", value: node.bounds })
   return arr;
 })
 const currentNode = computed(() => {
@@ -187,7 +166,8 @@ const currentMode = computed(() => {
 </script>
 
 <style scoped>
-.el-header, el-main {
+.el-header,
+el-main {
   padding: 0;
 }
 
@@ -201,7 +181,7 @@ const currentMode = computed(() => {
   box-sizing: border-box;
 }
 
-.info-container > .el-row {
+.info-container>.el-row {
   margin-bottom: 12px;
 }
 

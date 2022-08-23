@@ -1,28 +1,19 @@
 <template>
   <div class="settings-modal-container">
-    <el-dialog v-model="settingsModalVisible"
-               :title="title"
-               @close="hideSettingsModalVisible">
+    <el-dialog v-model="settingsModalVisible" :title="title" @close="hideSettingsModalVisible">
       <el-form :model="options">
         <el-form-item label="UDID">
-          <el-select v-model="options.udid"
-                     @change="udidChangeHandle"
-                     placeholder="udid">
-            <el-option
-                v-for="item in devices"
-                :key="item"
-                :label="item"
-                :value="item"
-            />
+          <el-select v-model="options.udid" @change="udidChangeHandle" placeholder="udid">
+            <el-option v-for="item in devices" :key="item" :label="item" :value="item" />
           </el-select>
-          <el-button @click="refreshDevicesHandle" icon="Refresh" circle style="cursor: pointer;margin-left: 14px"/>
+          <el-button @click="refreshDevicesHandle" icon="Refresh" circle style="cursor: pointer;margin-left: 14px" />
         </el-form-item>
       </el-form>
       <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="cancelHandle">Cancel</el-button>
-        <el-button type="primary" @click="confirmHandle">Confirm</el-button>
-      </span>
+        <span class="dialog-footer">
+          <el-button @click="cancelHandle">Cancel</el-button>
+          <el-button type="primary" @click="confirmHandle">Confirm</el-button>
+        </span>
       </template>
     </el-dialog>
   </div>
@@ -30,10 +21,10 @@
 
 <script setup>
 import store from "@/store";
-import {ElLoading, ElMessage} from "element-plus";
+import { ElLoading, ElMessage } from "element-plus";
 import bus from "@/common/bus";
 
-const {ipcRenderer} = require("electron");
+const { ipcRenderer } = require("electron");
 
 const cancelHandle = () => {
   hideSettingsModalVisible();
@@ -64,21 +55,12 @@ const confirmHandle = async () => {
     text: 'Loading',
     background: 'rgba(0, 0, 0, 0.7)',
   })
-  ipcRenderer.send('automate-create', {udid: currentDevice.value});
+  await ipcRenderer.invoke('check-automate', { udid: currentDevice.value });
+  ipcRenderer.send('automate-create', { udid: currentDevice.value });
+  hideSettingsModalVisible();
   store.commit('ok');
   bus.$emit('refreshLayout');
-  hideSettingsModalVisible();
   store.commit('setMode', 'client');
-  /*setTimeout(() => {
-    if (loading.value.visible) {
-      console.error("加载失败");
-      ElMessage({
-        message: '加载失败，即将重试',
-        type: 'warn',
-      });
-      bus.$emit('refreshLayout');
-    }
-  }, 5 * 1000);*/
 }
 const hideSettingsModalVisible = () => {
   store.commit('hideSettingsModal')
@@ -92,5 +74,4 @@ const refreshDevicesHandle = () => {
 </script>
 
 <style scoped>
-
 </style>

@@ -5,39 +5,32 @@
         <pane-header>
           <template v-slot:title>
             <Icon icon="ant-design:layout-filled" color="gray" height="24px"
-                  style="vertical-align: middle;margin-right: 5px"/>
-            <span>{{ title }}{{ isOK }}</span>
+              style="vertical-align: middle;margin-right: 5px" />
+            <span>{{ title }}</span>
           </template>
           <template v-slot:extra>
-            <el-tooltip
-                effect="light"
-                content="刷新"
-                placement="bottom"
-            >
-              <el-button @click="refreshHandle" icon="Refresh" circle style="cursor: pointer"/>
+            <el-tooltip effect="light" content="刷新" placement="bottom">
+              <el-button @click="refreshHandle" :disabled="!store.getters.isOk" icon="Refresh" circle />
             </el-tooltip>
           </template>
         </pane-header>
       </el-header>
-      <div class="layout-container" :style="{width:capImgLoaded?'auto':'24vw'}">
-        <ElImage ref="capImgRef" @load="capImgLoadHandle" :src="capFilePath" alt=""
-                 style="height: 100%">
+      <div class="layout-container" :style="{ width: capImgLoaded ? 'auto' : '24vw' }">
+        <ElImage ref="capImgRef" @load="capImgLoadHandle" :src="capFilePath" alt="" style="height: 100%">
           <template #error>
             <div class="image__error">
               <el-icon>
-                <Picture/>
+                <Picture />
               </el-icon>
             </div>
           </template>
         </ElImage>
         <div class="structure-container" @mouseover="handleNodeMouseover" @mouseover.ctrl="handleNodeMouseoverWithCtrl"
-             @mouseout="activeNodes=[];activeCtrlNodes=[]">
-          <template v-for="(v,i) in renderedNodeCache.values()" :key="v.cacheId">
+          @mouseout="activeNodes = []; activeCtrlNodes = []">
+          <template v-for="(v, i) in renderedNodeCache.values()" :key="v.cacheId">
             <div :cacheId="v.cacheId" class="node"
-                 :class="{'active':isActive(v.cacheId),'active-ctrl':isActiveCtrl(v.cacheId),'clicked':currentNode.cacheId===v.cacheId,'exclude':isExclude(v.cacheId)}"
-                 @click="handleNodeClick"
-                 @click.ctrl="handleNodeClickWithCtrl"
-                 :style="v.style"></div>
+              :class="{ 'active': isActive(v.cacheId), 'active-ctrl': isActiveCtrl(v.cacheId), 'clicked': currentNode.cacheId === v.cacheId, 'exclude': isExclude(v.cacheId) }"
+              @click="handleNodeClick" @click.ctrl="handleNodeClickWithCtrl" :style="v.style"></div>
           </template>
         </div>
       </div>
@@ -46,12 +39,12 @@
 </template>
 
 <script setup>
-import {ref} from "vue";
-import {useStore} from "vuex";
+import { ref } from "vue";
+import { useStore } from "vuex";
 import bus from "@/common/bus";
-import {ElLoading, ElMessage} from "element-plus";
+import { ElLoading, ElMessage } from "element-plus";
 
-const {ipcRenderer} = require("electron");
+const { ipcRenderer } = require("electron");
 const store = useStore();
 const sizeOf = require('image-size')
 const props = defineProps(['parentStyle'])
@@ -62,6 +55,7 @@ let capImgOriginSize = ref();
 let capImgRef = ref();
 let activeNodes = ref([]);
 let activeCtrlNodes = ref([]);
+let count = 0;
 onMounted(() => {
   bus.$on('refreshLayout', () => {
     refreshHandle();
@@ -108,14 +102,14 @@ const renderLayout = () => {
   initLayoutImgOriginSize();
   nextTick(() => {
     let scaleRate = getLayoutImgSize().width / capImgOriginSize.value.width;
-    store.dispatch('renderNodeCache', {scaleRate: scaleRate});
+    store.dispatch('renderNodeCache', { scaleRate: scaleRate });
   })
 }
 /**
  * 刷新，重置一些变量，重新初始化
  */
 const refreshHandle = async () => {
-  const doHandle = async () => {
+  const doHandle = async (timer) => {
     if (!store.getters.isOk) {
       console.log('请先创建连接或手动选择布局文件');
       return;
@@ -134,15 +128,15 @@ const refreshHandle = async () => {
       udid: store.getters.currentDevice,
       filename: `layout_${timestamp}.png`
     });
-    let {data} = await ipcRenderer.invoke('automate-dump', {filename: `layout_${timestamp}.xml`});
-    store.commit('setCapFilePath', {filepath: capFilePath});
-    store.commit('setXmlFilePath', {filepath: data});
+    let { data } = await ipcRenderer.invoke('automate-dump', { filename: `layout_${timestamp}.xml` });
+    store.commit('setCapFilePath', { filepath: capFilePath });
+    store.commit('setXmlFilePath', { filepath: data });
     // init();
     loading.value.close();
+    clearTimeout(timer);
   };
-  doHandle();
-  setTimeout(() => {
-    if (loading.value.visible) {
+  let timer = setTimeout(() => {
+    if (loading.value && loading.value.visible) {
       console.error("加载失败");
       ElMessage({
         message: '加载失败，即将重试',
@@ -151,6 +145,7 @@ const refreshHandle = async () => {
       doHandle();
     }
   }, 20 * 1000);
+  doHandle(timer);
 };
 /**
  * 布局节点的鼠标滑动事件处理，为当前鼠标指向的节点添加高亮处理
@@ -199,7 +194,6 @@ const isExclude = (cacheId) => {
  * @param event
  */
 const capImgLoadHandle = (event) => {
-  debugger
   console.log('capImgLoaded')
   capImgLoaded.value = true;
   renderLayout();
@@ -236,7 +230,8 @@ const capFilePath = computed(() => {
   text-align: center;
 }
 
-.el-header, el-main {
+.el-header,
+el-main {
   padding: 0;
 }
 

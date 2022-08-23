@@ -17,7 +17,7 @@ const getOriginXml = () => {
 
 function parseDoc(doc, parent, index) {
     let xpath = parent ? parent.xpath : '';
-    xpath += `/node[${index ? index + 1 : 0}]`;
+    xpath += `/node[${index ? (index + 1) : 1}]`;
     let node = {
         'resourceId': doc.attr['resources-id'],
         'class': doc.attr['class'],
