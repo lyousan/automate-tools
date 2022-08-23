@@ -23,7 +23,8 @@
                     <el-button @click="nodeClickHandle" :disabled="true" type="" icon="Aim" />
                   </el-tooltip>
                   <el-tooltip effect="light" content="点击节点" placement="bottom">
-                    <el-button @click="nodeClickHandle" :disabled="currentMode !== 'client'" type="">
+                    <el-button @click="nodeClickHandle" :disabled="currentMode !== 'client' || !currentNode.cacheId"
+                      type="">
                       <Icon icon="icon-park-outline:click-tap" />
                     </el-button>
                   </el-tooltip>
@@ -33,7 +34,8 @@
                     </el-button>
                   </el-tooltip>
                   <el-tooltip effect="light" content="输入" placement="bottom">
-                    <el-button :disabled="currentMode !== 'client'" type="" icon="EditPen" />
+                    <el-button @click="openInputModal" :disabled="currentMode !== 'client' || !currentNode.cacheId"
+                      type="" icon="EditPen" />
                   </el-tooltip>
                   <el-tooltip effect="light" content="计时" placement="bottom">
                     <el-button :disabled="true" type="" icon="Stopwatch" />
@@ -65,6 +67,19 @@
         </el-scrollbar>
       </div>
     </el-container>
+    <el-dialog v-model="inputModalVisible" @close="hideInputModal" title="Input text">
+      <el-form label-width="60px">
+        <el-form-item label="text">
+          <el-input v-model="inputText" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="hideInputModal">Cancel</el-button>
+          <el-button type="primary" @click="sendInputText">Send</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -77,6 +92,8 @@ const { ipcRenderer } = require('electron')
 let title = ref("Node Info");
 let expands = ref(["Location", "Attributes"]);
 let loading = ref();
+let inputModalVisible = ref(false);
+let inputText = ref('');
 const nodeClickHandle = async () => {
   loading.value = ElLoading.service({
     lock: true,
@@ -93,6 +110,34 @@ const nodeClickHandle = async () => {
   setTimeout(() => {
     bus.$emit('refreshLayout');
   }, 200);
+}
+const openInputModal = () => {
+  inputModalVisible.value = true
+}
+const hideInputModal = () => {
+  inputModalVisible.value = false
+}
+const sendInputText = async () => {
+  if (!inputText.value || !currentNode.value.cacheId) {
+    return
+  }
+  debugger
+  loading.value = ElLoading.service({
+    lock: true,
+    text: 'Loading',
+    background: 'rgba(0, 0, 0, 0.7)',
+  })
+  let response = await ipcRenderer.invoke('automate-input', { cacheId: currentNode.value.cacheId, text: inputText.value });
+  if (response.code != 200) {
+    ElMessage({
+      message: response.msg,
+      type: 'error'
+    })
+    loading.value.close();
+    return
+  }
+  bus.$emit('refreshLayout');
+  hideInputModal();
 }
 const locationData = computed(() => {
   let arr = [];

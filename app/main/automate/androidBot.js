@@ -22,6 +22,10 @@ class AndroidBot {
         return await this.__actions.click(this.__client, cacheId);
     }
 
+    input = async (options) => {
+        return await this.__actions.input(this.__client, options);
+    }
+
     findOne = async (options) => {
         return await this.__selector.findOne(this.__client, options);
     }

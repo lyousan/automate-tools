@@ -62,5 +62,9 @@ module.exports = function () {
     ipcMain.handle('automate-find', async (event, { type, value }) => {
         let res = await bot.find({ type, value });
         return res
+    });
+    ipcMain.handle('automate-input', async (event, { cacheId, text }) => {
+        let res = await bot.input({ cacheId, text });
+        return res
     })
 };

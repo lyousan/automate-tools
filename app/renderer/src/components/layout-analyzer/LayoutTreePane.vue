@@ -19,7 +19,7 @@
               <el-button icon="DocumentCopy" @click="copyXmlHandle" :disabled="!store.getters.isOk" circle />
             </el-tooltip>
             <el-tooltip effect="light" content="搜索" placement="bottom">
-              <el-button icon="Search" @click="openSearchModal" circle :disabled="!store.getters.isOk" />
+              <el-button icon="Search" @click="openSearchModal" circle :disabled="store.getters.mode!='client'" />
             </el-tooltip>
           </template>
         </pane-header>
