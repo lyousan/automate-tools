@@ -30,7 +30,7 @@
           <br />
           {{ store.getters.endPoint }} -->
         </div>
-        <ElImage ref="capImgRef" @load="capImgLoadHandle" :src="capFilePath" alt="" style="height: 100%">
+        <ElImage ref="capImgRef" @load="capImgLoadHandle" :src="'file://'+capFilePath" alt="" style="height: 100%">
           <template #error>
             <div class="image__error">
               <el-icon>

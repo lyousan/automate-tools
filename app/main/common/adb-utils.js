@@ -5,7 +5,7 @@ const ADB_DEVICES = 'adb devices';
 const PACKAGE_NAME = 'cn.chci.hmcs.automate';
 exports.adbDevices = () => {
     let res = execSync(ADB_DEVICES).toString()
-        .split('\r\n')
+        .split('\n')
         .filter(line => line.indexOf('\tdevice') > -1)
         .map(udid => udid.replace('\tdevice', ''));
     return res;
