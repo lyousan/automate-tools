@@ -49,6 +49,17 @@ module.exports = function () {
         bot = new AndroidBot(udid);
     });
     ipcMain.handle('automate-dump', async (event, { filename = 'layout.xml' }) => {
+        const removeBefore = () => {
+            let dir = path.resolve(process.cwd(), 'resources');
+            let files = fs.readdirSync(dir);
+            files.forEach(file => {
+                if (file.startsWith('layout')) {
+                    fs.unlinkSync(path.resolve(dir, file));
+                }
+            })
+        }
+        // 删除之前的文件
+        removeBefore();
         let dumpRes = await bot.dump();
         let filepath = path.resolve(process.cwd(), `resources/${filename}`);
         if (dumpRes.code == 200) {
@@ -65,6 +76,10 @@ module.exports = function () {
     });
     ipcMain.handle('automate-input', async (event, { cacheId, text }) => {
         let res = await bot.input({ cacheId, text });
+        return res
+    });
+    ipcMain.handle('automate-global-click', async (event, { x, y }) => {
+        let res = await bot.globalClick({ x, y });
         return res
     })
 };

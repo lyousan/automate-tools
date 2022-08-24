@@ -25,6 +25,7 @@
 <script setup>
 import store from "@/store";
 const { ipcRenderer } = require('electron')
+let title = ref('Searching');
 let types = ref([
     'id',
     'xpath',

@@ -20,7 +20,7 @@
               <el-col :span="24">
                 <el-button-group>
                   <el-tooltip effect="light" content="点击" placement="bottom">
-                    <el-button @click="nodeClickHandle" :disabled="true" type="" icon="Aim" />
+                    <el-button @click="globalClickHandle" :disabled="currentMode !== 'client'" type="" icon="Aim" />
                   </el-tooltip>
                   <el-tooltip effect="light" content="点击节点" placement="bottom">
                     <el-button @click="nodeClickHandle" :disabled="currentMode !== 'client' || !currentNode.cacheId"
@@ -67,7 +67,7 @@
         </el-scrollbar>
       </div>
     </el-container>
-    <el-dialog v-model="inputModalVisible" @close="hideInputModal" title="Input text">
+    <el-dialog v-model="inputModalVisible" @close="hideInputModal" title="">
       <el-form label-width="60px">
         <el-form-item label="text">
           <el-input v-model="inputText" />
@@ -94,6 +94,17 @@ let expands = ref(["Location", "Attributes"]);
 let loading = ref();
 let inputModalVisible = ref(false);
 let inputText = ref('');
+const globalClickHandle = async () => {
+  if (store.getters.isClicking) {
+    store.commit('setClicking', false);
+    document.querySelector('.layout-container .el-image').style.zIndex = 0;
+    document.querySelector('body').style.cursor = 'auto';
+  } else {
+    store.commit('setClicking', true);
+    document.querySelector('.layout-container .el-image').style.zIndex = 1;
+    document.querySelector('body').style.cursor = 'crosshair';
+  }
+}
 const nodeClickHandle = async () => {
   loading.value = ElLoading.service({
     lock: true,

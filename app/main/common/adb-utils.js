@@ -23,17 +23,6 @@ exports.backByAdb = (udid) => {
     execSync(`adb -s ${udid} shell input keyevent 4`);
 };
 exports.screenCap = (udid, filename) => {
-    const removeBefore = () => {
-        let dir = path.resolve(process.cwd(), 'resources');
-        let files = fs.readdirSync(dir);
-        files.forEach(file => {
-            if (file.startsWith('layout')) {
-                fs.unlinkSync(path.resolve(dir, file));
-            }
-        })
-    }
-    // 删除之前的文件
-    removeBefore();
     let filepath = path.resolve(process.cwd(), `resources/${filename}`);
     execSync(`adb -s ${udid} shell screencap -p /sdcard/${filename}`);
     execSync(`adb -s ${udid} pull /sdcard/${filename} "${filepath}"`);

@@ -15,7 +15,7 @@
           </template>
         </pane-header>
       </el-header>
-      <div class="layout-container" :style="{ width: capImgLoaded ? 'auto' : '24vw' }">
+      <div class="layout-container" @click="handleClickForPoint" :style="{ width: capImgLoaded ? 'auto' : '24vw' }">
         <ElImage ref="capImgRef" @load="capImgLoadHandle" :src="capFilePath" alt="" style="height: 100%">
           <template #error>
             <div class="image__error">
@@ -55,7 +55,7 @@ let capImgOriginSize = ref();
 let capImgRef = ref();
 let activeNodes = ref([]);
 let activeCtrlNodes = ref([]);
-let count = 0;
+let scaleRate = ref();
 onMounted(() => {
   bus.$on('refreshLayout', () => {
     refreshHandle();
@@ -70,6 +70,33 @@ window.onresize = () => {
   if (store.getters.isOk) {
     renderLayout();
   }
+}
+const handleClickForPoint = async (ev) => {
+  console.log(ev);
+  if (!store.getters.isClicking) {
+    return
+  }
+  loading.value = ElLoading.service({
+    lock: true,
+    text: 'Loading',
+    background: 'rgba(0, 0, 0, 0.7)',
+  })
+  console.log(ev.offsetX, ev.offsetY);
+  let point = [Math.floor(ev.offsetX / scaleRate.value), Math.floor(ev.offsetY / scaleRate.value)];
+  console.log('point:', point);
+  let response = await ipcRenderer.invoke('automate-global-click', { x: point[0], y: point[1] });
+  document.querySelector('body').style.cursor = 'auto';
+  store.commit('setClicking', false);
+  document.querySelector('.layout-container .el-image').style.zIndex = 0;
+  loading.value.close();
+  if (response.code != 200) {
+    ElMessage({
+      message: response.msg,
+      type: 'error'
+    })
+    return
+  }
+  bus.$emit('refreshLayout');
 }
 
 /**
@@ -101,10 +128,11 @@ const renderLayout = () => {
   };
   initLayoutImgOriginSize();
   nextTick(() => {
-    let scaleRate = getLayoutImgSize().width / capImgOriginSize.value.width;
-    store.dispatch('renderNodeCache', { scaleRate: scaleRate });
+    scaleRate.value = getLayoutImgSize().width / capImgOriginSize.value.width;
+    store.dispatch('renderNodeCache', { scaleRate: scaleRate.value });
   })
 }
+
 /**
  * 刷新，重置一些变量，重新初始化
  */
@@ -124,13 +152,14 @@ const refreshHandle = async () => {
     store.commit('clearExcludeNodes');
     // TODO 更换图片/xml资源
     let timestamp = new Date().getTime();
+    debugger
+    let { data } = await ipcRenderer.invoke('automate-dump', { filename: `layout_${timestamp}.xml` });
     let capFilePath = await ipcRenderer.invoke('screenCap', {
       udid: store.getters.currentDevice,
       filename: `layout_${timestamp}.png`
     });
-    let { data } = await ipcRenderer.invoke('automate-dump', { filename: `layout_${timestamp}.xml` });
-    store.commit('setCapFilePath', { filepath: capFilePath });
     store.commit('setXmlFilePath', { filepath: data });
+    store.commit('setCapFilePath', { filepath: capFilePath });
     // init();
     loading.value.close();
     clearTimeout(timer);
