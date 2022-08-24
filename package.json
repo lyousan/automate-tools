@@ -44,7 +44,7 @@
     },
     "copyright": "Copyright © 2022 lyousan",
     "linux": {
-      "icon": "icons/automate.ico"
+      "icon": "icons/automate.png"
     },
     "win": {
       "icon": "icons/automate.ico",
