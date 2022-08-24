@@ -13,7 +13,7 @@
               <el-button icon="Setting" @click="openSettingsModal" circle />
             </el-tooltip>
             <el-tooltip effect="light" content="导入文件" placement="bottom">
-              <el-button icon="FolderOpened" @click="openImportFileModal" circle />
+              <el-button icon="FolderOpened" @click="openImportFileModal" circle :disabled="store.getters.mode=='client'"/>
             </el-tooltip>
             <el-tooltip effect="light" content="复制XML" placement="bottom">
               <el-button icon="DocumentCopy" @click="copyXmlHandle" :disabled="!store.getters.isOk" circle />
