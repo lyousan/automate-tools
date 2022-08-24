@@ -1,6 +1,6 @@
 // const { default: installExtension, VUEJS3_DEVTOOLS } = require('electron-devtools-installer');
 
-const { app, BrowserWindow, Menu } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain } = require('electron');
 const path = require('path');
 const isDev = require('electron-is-dev');
 const ipcMainHandler = require('./ipc/ipcMainHandler');
@@ -20,7 +20,7 @@ const createMainWindow = () => {
     if (isDev) {
         mainWin.loadURL('http://127.0.0.1:5173');
         // mainWin.webContents.openDevTools();
-    } else {    
+    } else {
         mainWin.loadFile(path.resolve(__dirname, '../renderer/pages/index.html'));
     }
     console.log("process.cwd(): ", process.cwd());
@@ -36,4 +36,11 @@ const createMainWindow = () => {
 app.on('ready', () => {
     createMainWindow();
     ipcMainHandler();
+    ipcMain.on('triggleDevTools', () => {
+        if (mainWin.webContents.isDevToolsOpened()) {
+            mainWin.webContents.closeDevTools();
+        } else {
+            mainWin.webContents.openDevTools();
+        }
+    });
 })

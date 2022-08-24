@@ -9,6 +9,7 @@ import ImportFileModal from "@/components/improt-file/ImportFileModal.vue";
 
 const { ipcRenderer } = require('electron')
 const store = useStore();
+let isDevToolsOpened = ref(false);
 onMounted(() => {
   bus.$on('openSettingsModal', () => {
     store.commit('showSettingsModal');
@@ -20,6 +21,11 @@ onMounted(() => {
     store.commit('showSearchModal');
   });
 })
+window.onkeydown = async (event) => {
+  if (event.code === 'F12') {
+    ipcRenderer.send('triggleDevTools');
+  }
+}
 onMounted(async () => {
   // let devices = await ipcRenderer.invoke('loadDevices');
   // console.log(devices);
