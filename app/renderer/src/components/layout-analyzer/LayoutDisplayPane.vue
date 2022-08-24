@@ -1,7 +1,7 @@
 <template>
   <el-main class="thin-border large-radius" style="height: 100%">
     <el-container style="height: 100%;" direction="vertical">
-      <el-header>
+      <el-header style="height:auto">
         <pane-header>
           <template v-slot:title>
             <Icon icon="ant-design:layout-filled" color="gray" height="24px"

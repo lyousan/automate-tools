@@ -1,7 +1,7 @@
 <template>
   <div class="container thin-border large-radius">
     <el-container style="height: 100%;" direction="vertical">
-      <el-header>
+      <el-header style="height:auto">
         <pane-header :title="title">
           <template v-slot:title>
             <Icon icon="ic:round-account-tree" color="gray" height="24px"
