@@ -30,7 +30,8 @@ exports.screenCap = (udid, filename) => {
 }
 exports.getAppVersion = (udid, packageName) => {
     try {
-        let version = execSync(`adb -s ${udid} shell pm dump ${packageName} | findstr versionName`);
+        let fileter = process.platform.indexOf('win') ? 'findstr' : 'grep';
+        let version = execSync(`adb -s ${udid} shell pm dump ${packageName} | ${fileter} versionName`);
         return version && version.toString().replace('versionName=', '').trim();
     } catch (err) {
         console.error(err);
