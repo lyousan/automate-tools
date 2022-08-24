@@ -19,11 +19,25 @@
             <el-row>
               <el-col :span="24">
                 <el-button-group>
+                  <el-tooltip effect="light" content="点击节点" placement="bottom">
+                    <el-button @click="nodeClickHandle" :disabled="currentMode !== 'client' || !currentNode.cacheId"
+                      type="">
+                      <Icon icon="icon-park-outline:click-tap" />
+                    </el-button>
+                  </el-tooltip>
+                  <el-tooltip effect="light" content="输入" placement="bottom">
+                    <el-button @click="openInputModal" :disabled="currentMode !== 'client' || !currentNode.cacheId"
+                      type="" icon="EditPen" />
+                  </el-tooltip>
+                </el-button-group>
+                <el-button-group style="margin-left:12px">
                   <el-tooltip effect="light" content="点击" placement="bottom">
-                    <el-button @click="globalClickHandle" :disabled="currentMode !== 'client'" type="" icon="Aim" />
+                    <el-button @click="globalClickHandle"
+                      :disabled="currentMode !== 'client' || store.getters.isSwiping" type="" icon="Aim" />
                   </el-tooltip>
                   <el-tooltip effect="light" content="滑动" placement="bottom">
-                    <el-button :disabled="currentMode !== 'client'">
+                    <el-button @click="globalSwipeHandle"
+                      :disabled="currentMode !== 'client' || store.getters.isClicking">
                       <Icon icon="fluent:double-tap-swipe-down-20-regular" :rotate="3" height="20" />
                     </el-button>
                   </el-tooltip>
@@ -36,25 +50,6 @@
                   <el-tooltip effect="light" content="最近任务" placement="bottom">
                     <el-button @click="globalRecentsHandle" :disabled="currentMode !== 'client'" type=""
                       icon="CopyDocument" />
-                  </el-tooltip>
-                </el-button-group>
-              </el-col>
-            </el-row>
-            <el-row style="margin-top:12px">
-              <el-col :span="24">
-                <el-button-group>
-                  <el-tooltip effect="light" content="点击节点" placement="bottom">
-                    <el-button @click="nodeClickHandle" :disabled="currentMode !== 'client' || !currentNode.cacheId"
-                      type="">
-                      <Icon icon="icon-park-outline:click-tap" />
-                    </el-button>
-                  </el-tooltip>
-                  <el-tooltip effect="light" content="输入" placement="bottom">
-                    <el-button @click="openInputModal" :disabled="currentMode !== 'client' || !currentNode.cacheId"
-                      type="" icon="EditPen" />
-                  </el-tooltip>
-                  <el-tooltip effect="light" content="计时" placement="bottom">
-                    <el-button :disabled="true" type="" icon="Stopwatch" />
                   </el-tooltip>
                 </el-button-group>
               </el-col>
@@ -171,6 +166,19 @@ const globalClickHandle = async () => {
     document.querySelector('body').style.cursor = 'auto';
   } else {
     store.commit('setClicking', true);
+    document.querySelector('.layout-container .el-image').style.zIndex = 1;
+    document.querySelector('body').style.cursor = 'crosshair';
+  }
+}
+const globalSwipeHandle = async () => {
+  if (store.getters.isSwiping) {
+    store.commit('setSwiping', false);
+    document.querySelector('.layout-container .el-image').style.zIndex = 0;
+    document.querySelector('body').style.cursor = 'auto';
+    store.commit('setStartPoint', {});
+    store.commit('setEndPoint', {});
+  } else {
+    store.commit('setSwiping', true);
     document.querySelector('.layout-container .el-image').style.zIndex = 1;
     document.querySelector('body').style.cursor = 'crosshair';
   }

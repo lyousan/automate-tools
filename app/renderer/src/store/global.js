@@ -2,7 +2,9 @@ const state = {
     // client/file
     mode: '',
     isClicking: false,
-    isSwiping: false
+    isSwiping: false,
+    startPoint: {},
+    endPoint: {}
 };
 
 const getters = {
@@ -14,6 +16,12 @@ const getters = {
     },
     isSwiping: (state) => {
         return state.isSwiping;
+    },
+    startPoint: (state) => {
+        return state.startPoint;
+    },
+    endPoint: (state) => {
+        return state.endPoint;
     }
 };
 
@@ -26,7 +34,13 @@ const mutations = {
     },
     setClicking: (state, isClicking) => {
         state.isClicking = isClicking;
-    }
+    },
+    setStartPoint: (state, point) => {
+        state.startPoint = point;
+    },
+    setEndPoint: (state, point) => {
+        state.endPoint = point;
+    },
 };
 
 const actions = {};

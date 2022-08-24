@@ -39,6 +39,9 @@ class AndroidBot {
     globalClick = async (options) => {
         return await this.__global.click(this.__client, options);
     }
+    globalSwipe = async (options) => {
+        return await this.__global.swipe(this.__client, options);
+    }
     globalBack = async () => {
         return await this.__global.back(this.__client);
     }

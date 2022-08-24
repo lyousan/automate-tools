@@ -15,7 +15,21 @@
           </template>
         </pane-header>
       </el-header>
-      <div class="layout-container" @click="handleClickForPoint" :style="{ width: capImgLoaded ? 'auto' : '24vw' }">
+      <div class="layout-container" @mousemove="handleMousemove" @click="handleClickForPoint"
+        :style="{ width: capImgLoaded ? 'auto' : '24vw' }">
+        <div class="startPoint"
+          v-show="(store.getters.isClicking || store.getters.isSwiping) && store.getters.startPoint.x"
+          :style="[{ top: startPoint.y - 15 + 'px' }, { left: startPoint.x - 15 + 'px' }]">
+          <!-- 15 是球球的半径 -->
+        </div>
+        <div class="coord" v-show="store.getters.isClicking || store.getters.isSwiping">
+          <span>X: {{ point.x }}</span>
+          <span>Y: {{ point.y }}</span>
+          <!-- <br />
+          {{ store.getters.startPoint }}
+          <br />
+          {{ store.getters.endPoint }} -->
+        </div>
         <ElImage ref="capImgRef" @load="capImgLoadHandle" :src="capFilePath" alt="" style="height: 100%">
           <template #error>
             <div class="image__error">
@@ -56,6 +70,9 @@ let capImgRef = ref();
 let activeNodes = ref([]);
 let activeCtrlNodes = ref([]);
 let scaleRate = ref();
+let point = ref({});
+let startPoint = ref({});
+let endPoint = ref({});
 onMounted(() => {
   bus.$on('refreshLayout', () => {
     refreshHandle();
@@ -72,8 +89,7 @@ window.onresize = () => {
   }
 }
 const handleClickForPoint = async (ev) => {
-  console.log(ev);
-  if (!store.getters.isClicking) {
+  if (!store.getters.isSwiping && !store.getters.isClicking) {
     return
   }
   loading.value = ElLoading.service({
@@ -82,14 +98,33 @@ const handleClickForPoint = async (ev) => {
     background: 'rgba(0, 0, 0, 0.7)',
   })
   console.log(ev.offsetX, ev.offsetY);
-  let point = [Math.floor(ev.offsetX / scaleRate.value), Math.floor(ev.offsetY / scaleRate.value)];
+  point.value = { x: Math.floor(ev.offsetX / scaleRate.value), y: Math.floor(ev.offsetY / scaleRate.value) };
   console.log('point:', point);
-  let response = await ipcRenderer.invoke('automate-global-click', { x: point[0], y: point[1] });
+  if (!store.getters.startPoint.x) {
+    store.commit('setStartPoint', point.value);
+  } else {
+    store.commit('setEndPoint', point.value);
+  }
+  let response = null;
+  if (store.getters.isClicking) {
+    response = await ipcRenderer.invoke('automate-global-click', { x: store.getters.startPoint.x, y: store.getters.startPoint.y });
+    store.commit('setStartPoint', {});
+    store.commit('setClicking', false);
+  } else if (store.getters.isSwiping && store.getters.endPoint.x) {
+    let points = [{ x: store.getters.startPoint.x, y: store.getters.startPoint.y }, { x: store.getters.endPoint.x, y: store.getters.endPoint.y }];
+    console.log('swpie:', points);
+    response = await ipcRenderer.invoke('automate-global-swipe', [{ x: store.getters.startPoint.x, y: store.getters.startPoint.y }, { x: store.getters.endPoint.x, y: store.getters.endPoint.y }]);
+    store.commit('setStartPoint', {});
+    store.commit('setEndPoint', {});
+    store.commit('setSwiping', false);
+  } else {
+    loading.value.close();
+    return;
+  }
   document.querySelector('body').style.cursor = 'auto';
-  store.commit('setClicking', false);
   document.querySelector('.layout-container .el-image').style.zIndex = 0;
   loading.value.close();
-  if (response.code != 200) {
+  if (response && response.code != 200) {
     ElMessage({
       message: response.msg,
       type: 'error'
@@ -98,7 +133,17 @@ const handleClickForPoint = async (ev) => {
   }
   bus.$emit('refreshLayout');
 }
-
+const handleMousemove = (ev) => {
+  if ((store.getters.isClicking || store.getters.isSwiping)) {
+    console.log(ev.offsetX, ev.offsetY);
+    point.value = { x: ev.offsetX, y: ev.offsetY };
+    if (!store.getters.startPoint.x) {
+      startPoint.value = point.value;
+    } else {
+      endPoint.value = point.value;
+    }
+  }
+}
 /**
  * 初始化：加载图片 加载xml 渲染布局结构
  */
@@ -314,5 +359,41 @@ el-main {
 
 /deep/ .image-slot .el-icon {
   font-size: 30px;
+}
+
+.startPoint {
+  position: absolute;
+  height: 30px;
+  width: 30px;
+  background-color: #fcc;
+  opacity: .8;
+  z-index: 2;
+  border-radius: 50%;
+}
+
+.coord {
+  text-align: left;
+  position: absolute;
+  padding: 8px;
+  width: 80px;
+  background-color: #fcc;
+  opacity: .8;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.coord span {
+  display: inline-block;
+  width: 40px;
+}
+
+.show {
+  display: block !important;
+}
+
+.hide {
+  display: none !important;
 }
 </style>

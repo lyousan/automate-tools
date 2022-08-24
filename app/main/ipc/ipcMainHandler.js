@@ -82,6 +82,10 @@ module.exports = function () {
         let res = await bot.globalClick({ x, y });
         return res
     });
+    ipcMain.handle('automate-global-swipe', async (event, points) => {
+        let res = await bot.globalSwipe(points);
+        return res
+    });
     ipcMain.handle('automate-global-back', async (event) => {
         let res = await bot.globalBack();
         return res
