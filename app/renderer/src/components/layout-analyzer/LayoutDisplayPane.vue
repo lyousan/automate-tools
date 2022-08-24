@@ -152,7 +152,6 @@ const refreshHandle = async () => {
     store.commit('clearExcludeNodes');
     // TODO 更换图片/xml资源
     let timestamp = new Date().getTime();
-    debugger
     let { data } = await ipcRenderer.invoke('automate-dump', { filename: `layout_${timestamp}.xml` });
     let capFilePath = await ipcRenderer.invoke('screenCap', {
       udid: store.getters.currentDevice,

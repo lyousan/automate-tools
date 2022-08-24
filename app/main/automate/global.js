@@ -16,6 +16,39 @@ class Global {
         })
         return res;
     }
+
+    back = async (client) => {
+        let request = new Request();
+        request.command = new Command("Global", "back", [], []);
+        let res = await new Promise((resolve, reject) => {
+            client.send(request, (response) => {
+                resolve(response);
+            });
+        })
+        return res;
+    }
+
+    home = async (client) => {
+        let request = new Request();
+        request.command = new Command("Global", "home", [], []);
+        let res = await new Promise((resolve, reject) => {
+            client.send(request, (response) => {
+                resolve(response);
+            });
+        })
+        return res;
+    }
+    
+    recents = async (client) => {
+        let request = new Request();
+        request.command = new Command("Global", "recents", [], []);
+        let res = await new Promise((resolve, reject) => {
+            client.send(request, (response) => {
+                resolve(response);
+            });
+        })
+        return res;
+    }
 }
 
 module.exports = {

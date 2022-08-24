@@ -22,15 +22,31 @@
                   <el-tooltip effect="light" content="点击" placement="bottom">
                     <el-button @click="globalClickHandle" :disabled="currentMode !== 'client'" type="" icon="Aim" />
                   </el-tooltip>
+                  <el-tooltip effect="light" content="滑动" placement="bottom">
+                    <el-button :disabled="currentMode !== 'client'">
+                      <Icon icon="fluent:double-tap-swipe-down-20-regular" :rotate="3" height="20" />
+                    </el-button>
+                  </el-tooltip>
+                  <el-tooltip effect="light" content="返回" placement="bottom">
+                    <el-button @click="globalBackHandle" :disabled="currentMode !== 'client'" type="" icon="Back" />
+                  </el-tooltip>
+                  <el-tooltip effect="light" content="HOME" placement="bottom">
+                    <el-button @click="globalHomeHandle" :disabled="currentMode !== 'client'" type="" icon="House" />
+                  </el-tooltip>
+                  <el-tooltip effect="light" content="最近任务" placement="bottom">
+                    <el-button @click="globalRecentsHandle" :disabled="currentMode !== 'client'" type=""
+                      icon="CopyDocument" />
+                  </el-tooltip>
+                </el-button-group>
+              </el-col>
+            </el-row>
+            <el-row style="margin-top:12px">
+              <el-col :span="24">
+                <el-button-group>
                   <el-tooltip effect="light" content="点击节点" placement="bottom">
                     <el-button @click="nodeClickHandle" :disabled="currentMode !== 'client' || !currentNode.cacheId"
                       type="">
                       <Icon icon="icon-park-outline:click-tap" />
-                    </el-button>
-                  </el-tooltip>
-                  <el-tooltip effect="light" content="滑动" placement="bottom">
-                    <el-button :disabled="true">
-                      <Icon icon="fluent:double-tap-swipe-down-20-regular" :rotate="3" height="20" />
                     </el-button>
                   </el-tooltip>
                   <el-tooltip effect="light" content="输入" placement="bottom">
@@ -94,6 +110,60 @@ let expands = ref(["Location", "Attributes"]);
 let loading = ref();
 let inputModalVisible = ref(false);
 let inputText = ref('');
+const globalRecentsHandle = async () => {
+  loading.value = ElLoading.service({
+    lock: true,
+    text: 'Loading',
+    background: 'rgba(0, 0, 0, 0.7)',
+  })
+  let response = await ipcRenderer.invoke('automate-global-recents');
+  loading.value.close();
+  if (response.code != 200) {
+    console.log(response);
+    ElMessage({
+      message: response.msg,
+      type: 'error'
+    });
+    return
+  }
+  bus.$emit('refreshLayout');
+}
+const globalHomeHandle = async () => {
+  loading.value = ElLoading.service({
+    lock: true,
+    text: 'Loading',
+    background: 'rgba(0, 0, 0, 0.7)',
+  })
+  let response = await ipcRenderer.invoke('automate-global-home');
+  loading.value.close();
+  if (response.code != 200) {
+    console.log(response);
+    ElMessage({
+      message: response.msg,
+      type: 'error'
+    });
+    return
+  }
+  bus.$emit('refreshLayout');
+}
+const globalBackHandle = async () => {
+  loading.value = ElLoading.service({
+    lock: true,
+    text: 'Loading',
+    background: 'rgba(0, 0, 0, 0.7)',
+  })
+  let response = await ipcRenderer.invoke('automate-global-back');
+  loading.value.close();
+  if (response.code != 200) {
+    console.log(response);
+    ElMessage({
+      message: response.msg,
+      type: 'error'
+    });
+    return
+  }
+  bus.$emit('refreshLayout');
+}
 const globalClickHandle = async () => {
   if (store.getters.isClicking) {
     store.commit('setClicking', false);

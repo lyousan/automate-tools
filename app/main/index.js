@@ -19,8 +19,8 @@ const createMainWindow = () => {
     })
     if (isDev) {
         mainWin.loadURL('http://127.0.0.1:5173');
-        mainWin.webContents.openDevTools();
-    } else {
+        // mainWin.webContents.openDevTools();
+    } else {    
         mainWin.loadFile(path.resolve(__dirname, '../renderer/pages/index.html'));
     }
     console.log("process.cwd(): ", process.cwd());

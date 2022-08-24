@@ -39,6 +39,15 @@ class AndroidBot {
     globalClick = async (options) => {
         return await this.__global.click(this.__client, options);
     }
+    globalBack = async () => {
+        return await this.__global.back(this.__client);
+    }
+    globalHome = async () => {
+        return await this.__global.home(this.__client);
+    }
+    globalRecents = async () => {
+        return await this.__global.recents(this.__client);
+    }
 }
 
 module.exports = {

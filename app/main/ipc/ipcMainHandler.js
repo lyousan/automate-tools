@@ -81,5 +81,17 @@ module.exports = function () {
     ipcMain.handle('automate-global-click', async (event, { x, y }) => {
         let res = await bot.globalClick({ x, y });
         return res
+    });
+    ipcMain.handle('automate-global-back', async (event) => {
+        let res = await bot.globalBack();
+        return res
+    });
+    ipcMain.handle('automate-global-home', async (event) => {
+        let res = await bot.globalHome();
+        return res
+    });
+    ipcMain.handle('automate-global-recents', async (event) => {
+        let res = await bot.globalRecents();
+        return res
     })
 };
