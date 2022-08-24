@@ -61,7 +61,6 @@
                     <el-table :data="locationData" size="small" fit table-layout="fixed" @cell-click="valueClickHandle">
                       <el-table-column prop="key" label="by" min-width="30" />
                       <el-table-column prop="value" label="selector" />
-                      <el-table-column prop="timing" label="timing" width="100" />
                     </el-table>
                   </el-collapse-item>
                   <el-collapse-item title="Attributes" name="Attributes">

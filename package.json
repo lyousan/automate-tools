@@ -9,6 +9,7 @@
     "start:render": "cd app/renderer && npm run dev",
     "build": "cd app/renderer && npm run build",
     "pack:win": "npm run build && electron-builder build --win",
+    "pack:linux": "npm run build && electron-builder build --linux",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -34,14 +35,19 @@
     "files": "app",
     "asar": false,
     "extraFiles": [
-      "app/renderer/**/src"
+      "app/renderer/**/src",
+      "resources/automate.apk"
     ],
     "directories": {
-      "buildResources": "resource",
+      "buildResources": "resources",
       "output": "release"
     },
     "copyright": "Copyright © 2022 lyousan",
+    "linux": {
+      "icon": "icons/automate.ico"
+    },
     "win": {
+      "icon": "icons/automate.ico",
       "target": [
         "nsis"
       ]
@@ -51,9 +57,6 @@
       "language": "2052",
       "perMachine": true,
       "allowToChangeInstallationDirectory": true
-    },
-    "squirrelWindows": {
-      "iconUrl": "https://raw.githubusercontent.com/dengyaolong/geektime-electron/master/img/icon.ico"
     }
   }
 }

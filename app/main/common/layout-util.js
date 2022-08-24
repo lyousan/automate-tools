@@ -19,7 +19,7 @@ function parseDoc(doc, parent, index) {
     let xpath = parent ? parent.xpath : '';
     xpath += `/node[${index ? (index + 1) : 1}]`;
     let node = {
-        'resourceId': doc.attr['resources-id'],
+        'resourceId': doc.attr['resource-id'],
         'class': doc.attr['class'],
         'text': doc.attr['text'],
         'contentDesc': doc.attr['content-desc'],
