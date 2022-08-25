@@ -144,16 +144,6 @@ const handleMousemove = (ev) => {
     }
   }
 }
-/**
- * 初始化：加载图片 加载xml 渲染布局结构
- */
-const init = () => {
-  if (store.getters.isOk) {
-    console.log("init");
-    renderLayout();
-    store.dispatch('loadNodeTree');
-  }
-}
 
 const renderLayout = () => {
   /**
@@ -217,7 +207,7 @@ const refreshHandle = async () => {
       });
       doHandle();
     }
-  }, 20 * 1000);
+  }, 15 * 1000);
   doHandle(timer);
 };
 /**

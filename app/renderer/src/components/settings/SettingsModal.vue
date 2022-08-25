@@ -50,6 +50,9 @@ const settingsModalVisible = computed(() => {
   return store.getters.settingsModalVisible;
 })
 const confirmHandle = async () => {
+  if (!currentDevice.value) {
+    return
+  }
   loading.value = ElLoading.service({
     lock: true,
     text: 'Loading',

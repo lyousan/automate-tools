@@ -1,5 +1,5 @@
 const net = require("net");
-const {grantSecurePermission, portForward, startAutomate, backByAdb} = require("../common/adb-utils");
+const { grantSecurePermission, portForward, startAutomate, backByAdb } = require("../common/adb-utils");
 const pako = require('pako');
 
 class Client {
@@ -18,14 +18,15 @@ class Client {
             startAutomate(udid);
             backByAdb(udid);
             this.__socket = net.createConnection(port, host);
-            let len = 0;
-            let compressedData = Buffer.alloc(0);
             this.__socket.on('connect', () => {
                 console.log('connected');
                 resolve(this);
             })
+            let len = 0;
+            let compressedData = Buffer.alloc(0);
+            let internalData = Buffer.alloc(0);
             this.__socket.on('data', (data) => {
-                console.log(data)
+                /* console.log(data)
                 let temLen = Number.parseInt(data.slice(0, 8).toString());
                 if (temLen > 0) {
                     len = temLen;
@@ -41,7 +42,7 @@ class Client {
                 }
                 // console.log('compressedData: ', compressedData);
                 if (compressedData.length === len) {
-                    let plain = pako.inflate(compressedData, {to: 'string'});
+                    let plain = pako.inflate(compressedData, { to: 'string' });
                     // 处理好的响应
                     console.log(`response:${plain}`);
                     let response = JSON.parse(plain);
@@ -52,6 +53,46 @@ class Client {
                     console.log('error:请不要发送的过快');
                     compressedData = Buffer.alloc(0);
                     len = 0;
+                } */
+                internalData = data;
+                console.log(internalData);
+                while (internalData.length >= 0) {
+                    let temLen = Number.parseInt(internalData.slice(0, 8).toString());
+                    if (temLen > 0) {
+                        len = temLen;
+                        compressedData = Buffer.alloc(internalData.length - 8);
+                        internalData.copy(compressedData, 0, 8);
+                    } else {
+                        let tmp = Buffer.alloc(compressedData.length + internalData.length);
+                        compressedData.copy(tmp);
+                        internalData.copy(tmp, compressedData.length, 0);
+                        compressedData = tmp;
+                    }
+                    if (compressedData.length === len) {
+                        let plain = pako.inflate(compressedData, { to: 'string' });
+                        // 处理好的响应
+                        console.log(`response:${plain}`);
+                        let response = JSON.parse(plain);
+                        this.__requestMap.get(response.requestId)(response);
+                        compressedData = Buffer.alloc(0);
+                        internalData = Buffer.alloc(0);
+                        len = 0;
+                        break;
+                    } else if (compressedData.length > len) {
+                        let fullData = Buffer.alloc(len);
+                        compressedData.copy(fullData, 0, 0, len);
+                        let plain = pako.inflate(compressedData, { to: 'string' });
+                        // 处理好的响应
+                        console.log(`response:${plain}`);
+                        let response = JSON.parse(plain);
+                        this.__requestMap.get(response.requestId)(response);
+                        console.error('数据被合并');
+                        internalData = Buffer.alloc(compressedData.length - len);
+                        compressedData.copy(internalData, 0, len);
+                        compressedData = Buffer.alloc(0);
+                    } else {
+                        break;
+                    }
                 }
             })
 

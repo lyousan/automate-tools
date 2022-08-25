@@ -65,7 +65,8 @@ module.exports = function () {
         if (dumpRes.code == 200) {
             fs.writeFileSync(filepath, dumpRes.data);
         }
-        return new Response(dumpRes.code, dumpRes.msg, filepath);
+        dumpRes.data=filepath;
+        return dumpRes;
     });
     ipcMain.handle('automate-node-click', async (event, cacheId) => {
         return await bot.nodeClick(cacheId);

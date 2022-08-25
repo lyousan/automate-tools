@@ -23,7 +23,6 @@ exports.backByAdb = (udid) => {
     execSync(`adb -s ${udid} shell input keyevent 4`);
 };
 exports.screenCap = (udid, filename) => {
-    debugger
     let filepath = path.resolve(process.cwd(), `resources/${filename}`);
     execSync(`adb -s ${udid} shell screencap -p "/sdcard/${filename}"`);
     execSync(`adb -s ${udid} pull "/sdcard/${filename}" "${filepath}"`);
