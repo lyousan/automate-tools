@@ -1,6 +1,8 @@
 # pack
 release/
 
+#resources
+resources/layout*
 # Logs
 logs
 *.log
