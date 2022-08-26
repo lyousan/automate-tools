@@ -49,6 +49,7 @@ const confirmHandle = async () => {
             message: response.msg,
             type: 'error'
         })
+        loading.value.close();
         return;
     }
     let reg = new RegExp('cacheId="(.*?)"');
