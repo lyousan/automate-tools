@@ -38,6 +38,9 @@
       "app/renderer/**/src",
       "resources/automate.apk"
     ],
+    "electronDownload": {
+      "mirror": "https://npm.taobao.org/mirrors/electron/"
+    },
     "directories": {
       "buildResources": "resources",
       "output": "release"
