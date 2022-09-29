@@ -185,7 +185,7 @@ const refreshHandle = async () => {
     activeNodes.value = [];
     store.commit('clearCurrentNode');
     store.commit('clearExcludeNodes');
-    // TODO 更换图片/xml资源
+    // 更换图片/xml资源
     let timestamp = new Date().getTime();
     let { data } = await ipcRenderer.invoke('automate-dump', { filename: `layout_${timestamp}.xml` });
     let capFilePath = await ipcRenderer.invoke('screenCap', {
@@ -202,7 +202,7 @@ const refreshHandle = async () => {
     if (loading.value && loading.value.visible) {
       console.error("加载失败");
       ElMessage({
-        message: '加载失败，即将重试',
+        message: '加载失败，即将重试，长时间未加载成功 尝试按Ctrl+R强制刷新程序',
         type: 'error',
       });
       doHandle();

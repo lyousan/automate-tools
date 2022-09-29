@@ -6,6 +6,8 @@ const { Dump } = require("../automate/dump");
 const { AndroidBot } = require("../automate/androidBot");
 const fs = require("fs");
 const path = require("path");
+const axios = require('axios');
+const { download, latestApkInfo } = require("../common/update");
 
 class Response {
     code;
@@ -37,9 +39,11 @@ module.exports = function () {
     ipcMain.handle('screenCap', (event, { udid, filename = 'layout.png' }) => {
         return screenCap(udid, filename);
     });
-    ipcMain.handle('check-automate', (event, { udid }) => {
+    ipcMain.handle('check-automate', async (event, { udid }) => {
         let version = getAppVersion(udid, 'cn.chci.hmcs.automate');
-        if (!version) {
+        let latestInfo = await latestApkInfo();
+        if (!version || version < latestInfo.version) {
+            await download(latestInfo.url, path.join(process.cwd(), 'resources'), 'automate.apk');
             installApp(udid, path.join(process.cwd(), 'resources/automate.apk'));
         }
         return version;
@@ -50,11 +54,15 @@ module.exports = function () {
     });
     ipcMain.handle('automate-dump', async (event, { filename = 'layout.xml' }) => {
         const removeBefore = () => {
+            let timestamp = new Date().getTime();
             let dir = path.resolve(process.cwd(), 'resources');
             let files = fs.readdirSync(dir);
             files.forEach(file => {
-                if (file.startsWith('layout')) {
-                    fs.unlinkSync(path.resolve(dir, file));
+                if (file.startsWith('layout_')) {
+                    // 删除一分钟前的
+                    if (timestamp - Number.parseInt(file.replace('layout_', '').replace('.xml', '').replace('.png', '')) > 1000 * 60) {
+                        fs.unlinkSync(path.resolve(dir, file));
+                    }
                 }
             })
         }
@@ -65,7 +73,7 @@ module.exports = function () {
         if (dumpRes.code == 200) {
             fs.writeFileSync(filepath, dumpRes.data);
         }
-        dumpRes.data=filepath;
+        dumpRes.data = filepath;
         return dumpRes;
     });
     ipcMain.handle('automate-node-click', async (event, cacheId) => {
