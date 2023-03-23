@@ -16,7 +16,7 @@ class Client {
             grantSecurePermission(udid);
             portForward(udid, port);
             startAutomate(udid);
-            backByAdb(udid);
+            // backByAdb(udid);
             this.__socket = net.createConnection(port, host);
             this.__socket.on('connect', () => {
                 console.log('connected');

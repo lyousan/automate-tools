@@ -274,7 +274,7 @@ const attributeData = computed(() => {
   let arr = [];
   let node = currentNode.value;
   arr.push({ key: "class", value: node.class })
-  arr.push({ key: "resources-id", value: node.resourceId })
+  arr.push({ key: "resource-id", value: node.resourceId })
   arr.push({ key: "text", value: node.text })
   arr.push({ key: "content-desc", value: node.contentDesc })
   arr.push({ key: "checkable", value: node.checkable })
